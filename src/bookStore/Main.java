@@ -71,6 +71,7 @@ public class Main {
 			}
 			System.out.println("-------------------------------");
 			System.out.print("please select the book!");
+
 			int bookSelected = input.nextInt();
 			for (Book book : books) {
 				if (book.getId() == bookSelected) {
@@ -82,6 +83,10 @@ public class Main {
 						System.out.print(type.getTypeName() + " ");
 						System.out.println();
 					}
+
+					int bookQuantity = totalQuantityFromStock(bookSelected, stocks);
+					book.setQuantity(bookQuantity);
+					System.out.println("quantity: " + book.getQuantity());
 				}
 
 			}
@@ -89,19 +94,24 @@ public class Main {
 			System.out.println("0. back to book list.");
 			System.out.println("1. borrow this book.");
 			System.out.println("2. return this book.");
-
 			int addToCart = input.nextInt();
 			if (addToCart == 1) {
 				System.out.println("borrow quantity: ");
 				int borrowNumber = input.nextInt();
-				BorrowItem item = new BorrowItem();
-				item.setId(borrowItemId);
-				item.setBookId(bookSelected);
-				item.setQuanity(borrowNumber);
-				item.setDay(date1);
-				borrowItemList.add(item);
-				borrowItemId++;
-				System.out.println("borrow confirmed!");
+				int bookQuantity = totalQuantityFromStock(bookSelected, stocks);
+				if (borrowNumber <= bookQuantity) {
+					BorrowItem item = new BorrowItem();
+					item.setId(borrowItemId);
+					item.setBookId(bookSelected);
+					item.setQuanity(borrowNumber);
+					item.setDay(date1);
+					borrowItemList.add(item);
+					borrowItemId++;
+					System.out.println("borrow confirmed!");
+				} else {
+					System.out.println("we dont have enough books!");
+				}
+
 			} else if (addToCart == 2) {
 				System.out.println("reutrn quantity: ");
 				int returnNumber = input.nextInt();
@@ -198,6 +208,16 @@ public class Main {
 		}
 
 		return list;
+	}
+
+	public static int totalQuantityFromStock(int bookId, Stock[] stocks) {
+		int totalQuantity = 0;
+		for (Stock stock : stocks) {
+			if (stock.getBookId() == bookId) {
+				totalQuantity += stock.getQuantity();
+			}
+		}
+		return totalQuantity;
 	}
 
 }
